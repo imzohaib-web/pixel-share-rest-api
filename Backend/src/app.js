@@ -1,10 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 const multer = require('multer');
 const uploadFile = require('../services/storage.service');
 const postModel = require('../models/post.model');
 
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const upload = multer({storage: multer.memoryStorage()}); // ye memory storage ka use kar raha hai
@@ -16,7 +18,7 @@ app.post('/create-post',upload.single("image"), async (req, res) => {
 
     const result = await uploadFile(req.file.buffer);
     const post = await postModel.create({
-        imaage : result.url,
+        image : result.url,
         caption : req.body.caption
     })  
     return res.status(201).json({
