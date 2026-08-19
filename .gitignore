@@ -1,0 +1,18 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+Backend/.env
+
+# Dependencies
+node_modules/
+Backend/node_modules/
+Frontend/node_modules/
+
+# Production build outputs
+dist/
+Frontend/dist/
+
+# Log files
+*.log
+npm-debug.log*
