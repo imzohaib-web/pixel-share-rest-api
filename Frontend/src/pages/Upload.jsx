@@ -98,7 +98,7 @@ const Upload = () => {
       formData.append('image', image);
       formData.append('caption', caption);
 
-      const response = await fetch('http://localhost:3000/create-post', {
+      const response = await fetch('http://localhost:3000/api/posts', {
         method: 'POST',
         body: formData,
       });

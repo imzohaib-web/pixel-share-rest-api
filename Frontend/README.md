@@ -1,16 +1,39 @@
-# React + Vite
+# 📸 PixelShare - Frontend Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This directory contains the React 19 + Vite frontend application for **PixelShare**, a media sharing web application.
 
-Currently, two official plugins are available:
+For full project documentation, architecture overview, API specifications, and complete setup instructions, see the main [Project README](../README.md).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## ⚡ Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Install dependencies
+npm install
 
-## Expanding the Oxlint configuration
+# Run dev server
+npm run dev
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+# Build for production
+npm run build
+```
+
+---
+
+## 🛠 Tech Stack
+
+- **React 19**
+- **Vite 8**
+- **React Router DOM 7**
+- **Vanilla CSS** (Custom responsive design tokens and dark theme)
+- **Oxlint**
+
+---
+
+## 📁 Structure
+
+- `src/components/Navbar.jsx`: Application navigation header.
+- `src/pages/Feed.jsx`: Public media feed component.
+- `src/pages/Upload.jsx`: Drag-and-drop image uploader & caption form.
+- `src/index.css`: Design system, color themes, glassmorphism, and responsive layout styling.

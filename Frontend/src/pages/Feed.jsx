@@ -10,15 +10,15 @@ const Feed = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('http://localhost:3000/post');
+      const response = await fetch('http://localhost:3000/api/posts');
       
       if (!response.ok) {
         throw new Error('Failed to fetch posts. Make sure backend is running.');
       }
       
       const data = await response.json();
-      // Backend returns structure like { message: "...", posts: [...] }
-      setPosts(data.posts || []);
+      // Supports standard API structure { success: true, message: "...", data: [...] }
+      setPosts(data.data || data.posts || []);
     } catch (err) {
       setError(err.message || 'Something went wrong while fetching feeds.');
       console.error(err);

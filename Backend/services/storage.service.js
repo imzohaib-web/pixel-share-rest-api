@@ -1,17 +1,38 @@
-const {ImageKit} = require('@imagekit/nodejs')
+const { ImageKit } = require('@imagekit/nodejs');
 
 const imagekit = new ImageKit({
     privateKey: process.env.IMAGEKIT_PRIVATE_KEY
-})
+});
 
-async function uploadFile(buffer){
+/**
+ * Uploads an in-memory buffer to ImageKit
+ * @param {Buffer} buffer - File buffer from Multer
+ * @param {string} [originalName='image.jpg'] - Original file name
+ * @returns {Promise<object>} ImageKit upload result object containing url and fileId
+ */
+async function uploadFile(buffer, originalName = 'image.jpg') {
     const result = await imagekit.files.upload({
         file: buffer.toString('base64'),
-        fileName: 'image.jpg'
-    })
-    return result
+        fileName: originalName
+    });
+    return result;
 }
 
-module.exports = uploadFile;
+/**
+ * Deletes a file from ImageKit by fileId
+ * @param {string} fileId - ImageKit unique file ID
+ * @returns {Promise<void>}
+ */
+async function deleteFile(fileId) {
+    if (!fileId) return;
+    try {
+        await imagekit.files.deleteFile(fileId);
+    } catch (error) {
+        console.error(`[ImageKit] Failed to delete file ${fileId}:`, error.message);
+    }
+}
 
-//ye function buffer mange ga aur ye function image ko upload karega imagekit pe aur uska url return karega
+module.exports = {
+    uploadFile,
+    deleteFile
+};

@@ -1,37 +1,47 @@
 const express = require('express');
 const cors = require('cors');
+const postRoutes = require('./routes/post.routes');
+const postController = require('./controllers/post.controller');
 const multer = require('multer');
-const uploadFile = require('../services/storage.service');
-const postModel = require('../models/post.model');
 
-
+const upload = multer({ storage: multer.memoryStorage() });
 const app = express();
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const upload = multer({storage: multer.memoryStorage()}); // ye memory storage ka use kar raha hai
-
-app.post('/create-post',upload.single("image"), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ message: "Image is required" });
-    }
-
-    const result = await uploadFile(req.file.buffer);
-    const post = await postModel.create({
-        image : result.url,
-        caption : req.body.caption
-    })  
-    return res.status(201).json({
-        message : "Post created successfully",
-        post
-    });
-})
-
-app.get('/post',async (req, res) => {
-    const posts = await postModel.find();
+// Health Check Endpoint
+app.get('/api/health', (req, res) => {
     return res.status(200).json({
-        message : "Posts fetched successfully",
-        posts
+        success: true,
+        message: "PixelShare API is running"
     });
-})
+});
+
+// RESTful Posts API
+app.use('/api/posts', postRoutes);
+
+// Legacy Endpoints Compatibility (Prevents breakage if any client hits old routes)
+app.post('/create-post', upload.single('image'), postController.createPost);
+app.get('/post', postController.getPosts);
+
+// 404 Handler
+app.use((req, res) => {
+    return res.status(404).json({
+        success: false,
+        message: "Route not found"
+    });
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error("Unhandled Error:", err);
+    return res.status(500).json({
+        success: false,
+        message: err.message || "Internal server error"
+    });
+});
+
 module.exports = app;
