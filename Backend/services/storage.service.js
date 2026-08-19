@@ -26,7 +26,7 @@ async function uploadFile(buffer, originalName = 'image.jpg') {
 async function deleteFile(fileId) {
     if (!fileId) return;
     try {
-        await imagekit.files.deleteFile(fileId);
+        await imagekit.files.delete(fileId);
     } catch (error) {
         console.error(`[ImageKit] Failed to delete file ${fileId}:`, error.message);
     }

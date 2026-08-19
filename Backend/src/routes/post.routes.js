@@ -7,7 +7,8 @@ const router = express.Router();
 router.get('/', postController.getPosts);
 router.get('/:id', postController.getPostById);
 router.post('/', handleImageUpload, postController.createPost);
-router.patch('/:id', postController.updatePost);
+router.patch('/:id', handleImageUpload, postController.updatePost);
+router.put('/:id', handleImageUpload, postController.updatePost);
 router.delete('/:id', postController.deletePost);
 
 module.exports = router;
