@@ -1,22 +1,20 @@
 const multer = require('multer');
+const path = require('path');
 
 const storage = multer.memoryStorage();
 
-const allowedMimeTypes = [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/webp',
-    'image/gif'
-];
+const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg', '.bmp', '.avif', '.heic'];
 
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 10 * 1024 * 1024 // 10MB limit
+        fileSize: 10 * 1024 * 1024 // 10MB maximum file size
     },
     fileFilter: (req, file, cb) => {
-        if (allowedMimeTypes.includes(file.mimetype.toLowerCase())) {
+        const mime = (file.mimetype || '').toLowerCase();
+        const ext = path.extname(file.originalname || '').toLowerCase();
+
+        if (mime.startsWith('image/') || allowedExtensions.includes(ext)) {
             cb(null, true);
         } else {
             const error = new Error('Image must be JPEG, PNG, WEBP, or GIF');

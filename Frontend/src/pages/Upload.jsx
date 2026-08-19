@@ -105,7 +105,8 @@ const Upload = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to create post. Please try again.');
+        const message = errorData.message || (typeof errorData.error === 'string' ? errorData.error : errorData.error?.message) || 'Failed to create post. Please try again.';
+        throw new Error(message);
       }
 
       setSuccess(true);
