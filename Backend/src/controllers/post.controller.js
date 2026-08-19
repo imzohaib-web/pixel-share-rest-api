@@ -4,7 +4,7 @@ const { uploadFile, deleteFile } = require('../../services/storage.service');
 
 /**
  * GET /api/posts
- * Fetch all posts
+ * Fetch all posts sorted by newest first
  */
 async function getPosts(req, res, next) {
     try {
@@ -55,7 +55,7 @@ async function getPostById(req, res, next) {
 
 /**
  * POST /api/posts
- * Create a new post with image upload
+ * Create a new post with image upload & server-side validation
  */
 async function createPost(req, res, next) {
     try {
@@ -66,12 +66,29 @@ async function createPost(req, res, next) {
             });
         }
 
+        let caption = '';
+        if (req.body.caption !== undefined && req.body.caption !== null) {
+            if (typeof req.body.caption !== 'string') {
+                return res.status(400).json({
+                    success: false,
+                    message: "Caption must be a string"
+                });
+            }
+            caption = req.body.caption.trim();
+            if (caption.length > 500) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Caption must not exceed 500 characters"
+                });
+            }
+        }
+
         const result = await uploadFile(req.file.buffer, req.file.originalname);
         
         const post = await postModel.create({
             image: result.url,
             fileId: result.fileId,
-            caption: req.body.caption || ''
+            caption
         });
 
         return res.status(201).json({
@@ -86,7 +103,7 @@ async function createPost(req, res, next) {
 
 /**
  * PATCH /api/posts/:id
- * Update post caption
+ * Update post caption with payload validation
  */
 async function updatePost(req, res, next) {
     try {
@@ -99,6 +116,29 @@ async function updatePost(req, res, next) {
             });
         }
 
+        if (!req.body || req.body.caption === undefined || req.body.caption === null) {
+            return res.status(400).json({
+                success: false,
+                message: "Caption is required for update"
+            });
+        }
+
+        if (typeof req.body.caption !== 'string') {
+            return res.status(400).json({
+                success: false,
+                message: "Caption must be a string"
+            });
+        }
+
+        const trimmedCaption = req.body.caption.trim();
+
+        if (trimmedCaption.length > 500) {
+            return res.status(400).json({
+                success: false,
+                message: "Caption must not exceed 500 characters"
+            });
+        }
+
         const post = await postModel.findById(id);
 
         if (!post) {
@@ -108,10 +148,7 @@ async function updatePost(req, res, next) {
             });
         }
 
-        if (req.body.caption !== undefined) {
-            post.caption = req.body.caption;
-        }
-
+        post.caption = trimmedCaption;
         await post.save();
 
         return res.status(200).json({

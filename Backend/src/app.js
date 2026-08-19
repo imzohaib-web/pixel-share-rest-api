@@ -2,9 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const postRoutes = require('./routes/post.routes');
 const postController = require('./controllers/post.controller');
-const multer = require('multer');
+const handleImageUpload = require('./middlewares/upload.middleware');
 
-const upload = multer({ storage: multer.memoryStorage() });
 const app = express();
 
 // Middlewares
@@ -24,7 +23,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/posts', postRoutes);
 
 // Legacy Endpoints Compatibility (Prevents breakage if any client hits old routes)
-app.post('/create-post', upload.single('image'), postController.createPost);
+app.post('/create-post', handleImageUpload, postController.createPost);
 app.get('/post', postController.getPosts);
 
 // 404 Handler
@@ -37,10 +36,18 @@ app.use((req, res) => {
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-    console.error("Unhandled Error:", err);
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid JSON body format"
+        });
+    }
+
+    console.error("Unhandled Error:", err.message);
+
     return res.status(500).json({
         success: false,
-        message: err.message || "Internal server error"
+        message: "Internal server error"
     });
 });
 

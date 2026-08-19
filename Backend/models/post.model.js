@@ -11,6 +11,8 @@ const postSchema = new mongoose.Schema({
     },
     caption: {
         type: String,
+        trim: true,
+        maxlength: [500, 'Caption must not exceed 500 characters'],
         default: ''
     }
 }, {
