@@ -13,7 +13,7 @@ const allowedMimeTypes = [
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 10 * 1024 * 1024 // 10MB maximum file size
+        fileSize: 10 * 1024 * 1024 // 10MB limit
     },
     fileFilter: (req, file, cb) => {
         if (allowedMimeTypes.includes(file.mimetype.toLowerCase())) {
@@ -27,33 +27,13 @@ const upload = multer({
 });
 
 /**
- * Express middleware wrapping Multer to handle upload validation errors gracefully
+ * Express middleware wrapping Multer file upload
+ * Forwards any file validation or size errors directly to next(err) for centralized error middleware handling
  */
 function handleImageUpload(req, res, next) {
     upload.single('image')(req, res, (err) => {
         if (err) {
-            if (err instanceof multer.MulterError) {
-                if (err.code === 'LIMIT_FILE_SIZE') {
-                    return res.status(400).json({
-                        success: false,
-                        message: 'File size must be less than 10MB'
-                    });
-                }
-                return res.status(400).json({
-                    success: false,
-                    message: 'File upload error'
-                });
-            }
-            if (err.code === 'INVALID_FILE_TYPE' || err.message) {
-                return res.status(400).json({
-                    success: false,
-                    message: err.message || 'Image must be JPEG, PNG, WEBP, or GIF'
-                });
-            }
-            return res.status(400).json({
-                success: false,
-                message: 'Failed to process uploaded file'
-            });
+            return next(err);
         }
         next();
     });
