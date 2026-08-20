@@ -11,6 +11,8 @@ const PostCard = ({ post, onUpdatePost, onDeletePost }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
 
+  const imageUrl = post.image || post.imaage;
+
   // Handle opening edit mode
   const handleStartEdit = () => {
     setCaption(post.caption || '');
@@ -53,7 +55,6 @@ const PostCard = ({ post, onUpdatePost, onDeletePost }) => {
         throw new Error(resData.message || 'Failed to update post.');
       }
 
-      // Notify parent component with updated post object
       const updatedPost = resData.data || { ...post, caption: caption.trim() };
       onUpdatePost(updatedPost);
 
@@ -83,7 +84,6 @@ const PostCard = ({ post, onUpdatePost, onDeletePost }) => {
         throw new Error(resData.message || 'Failed to delete post.');
       }
 
-      // Notify parent component to remove post from list immediately
       onDeletePost(post._id);
     } catch (err) {
       setDeleteError(err.message || 'Failed to delete post.');
@@ -93,33 +93,47 @@ const PostCard = ({ post, onUpdatePost, onDeletePost }) => {
   };
 
   return (
-    <div className="post-card">
+    <article className="post-card">
+      {/* IMAGE MEDIA CONTAINER */}
       <div className="post-image-container">
         <img 
-          src={post.image || post.imaage} 
-          alt={post.caption || 'Shared post'} 
+          src={imageUrl} 
+          alt={post.caption || 'Shared photograph'} 
           className="post-image"
           loading="lazy"
         />
+        <div className="post-image-overlay" />
+
         {updateSuccess && (
-          <div className="post-card-badge success">Updated</div>
+          <div className="post-card-badge success">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="badge-icon">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span>Updated</span>
+          </div>
         )}
       </div>
 
-      <div className="post-info">
+      {/* CARD CONTENT */}
+      <div className="post-content">
         {/* EDIT MODE */}
         {isEditing ? (
           <form onSubmit={handleSaveUpdate} className="post-edit-form">
             {updateError && (
               <div className="post-card-alert alert-error">
-                {updateError}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="alert-icon">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>{updateError}</span>
               </div>
             )}
             <textarea
               className="post-edit-textarea"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              placeholder="Write a caption..."
+              placeholder="Write a caption for this moment..."
               maxLength={500}
               disabled={isUpdating}
               rows={3}
@@ -143,7 +157,14 @@ const PostCard = ({ post, onUpdatePost, onDeletePost }) => {
                   className="btn-card-save"
                   disabled={isUpdating}
                 >
-                  {isUpdating ? 'Saving...' : 'Save Changes'}
+                  {isUpdating ? (
+                    <>
+                      <span className="spinner-sm" />
+                      <span>Saving</span>
+                    </>
+                  ) : (
+                    'Save Changes'
+                  )}
                 </button>
               </div>
             </div>
@@ -151,68 +172,92 @@ const PostCard = ({ post, onUpdatePost, onDeletePost }) => {
         ) : (
           /* DISPLAY MODE */
           <>
-            <p className="post-caption">{post.caption || <em className="no-caption">No caption</em>}</p>
+            <p className="post-caption">
+              {post.caption ? (
+                post.caption
+              ) : (
+                <em className="no-caption">Untitled moment</em>
+              )}
+            </p>
 
-            <div className="post-meta">
-              <span>Posted recently</span>
-            </div>
+            <div className="post-footer">
+              <span className="post-time">Posted recently</span>
 
-            {/* DELETE CONFIRMATION DIALOG */}
-            {showDeleteConfirm ? (
-              <div className="delete-confirm-box">
-                {deleteError && (
-                  <div className="post-card-alert alert-error">
-                    {deleteError}
+              {/* DELETE CONFIRMATION DIALOG */}
+              {showDeleteConfirm ? (
+                <div className="delete-confirm-box">
+                  {deleteError && (
+                    <div className="post-card-alert alert-error">
+                      <span>{deleteError}</span>
+                    </div>
+                  )}
+                  <p className="delete-confirm-title">Delete this post?</p>
+                  <p className="delete-confirm-sub">This action cannot be undone.</p>
+                  <div className="delete-confirm-actions">
+                    <button
+                      type="button"
+                      className="btn-card-cancel"
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setDeleteError(null);
+                      }}
+                      disabled={isDeleting}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-card-delete-confirm"
+                      onClick={handleConfirmDelete}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? (
+                        <>
+                          <span className="spinner-sm" />
+                          <span>Deleting</span>
+                        </>
+                      ) : (
+                        'Delete Post'
+                      )}
+                    </button>
                   </div>
-                )}
-                <p className="delete-confirm-text">Are you sure you want to delete this post?</p>
-                <div className="delete-confirm-actions">
+                </div>
+              ) : (
+                /* CARD ACTIONS (EDIT / DELETE) */
+                <div className="post-actions">
                   <button
                     type="button"
-                    className="btn-card-cancel"
-                    onClick={() => {
-                      setShowDeleteConfirm(false);
-                      setDeleteError(null);
-                    }}
-                    disabled={isDeleting}
+                    className="btn-action-edit"
+                    onClick={handleStartEdit}
+                    aria-label="Edit caption"
+                    title="Edit caption"
                   >
-                    Cancel
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="action-icon">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                    <span>Edit</span>
                   </button>
                   <button
                     type="button"
-                    className="btn-card-delete-confirm"
-                    onClick={handleConfirmDelete}
-                    disabled={isDeleting}
+                    className="btn-action-delete"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    aria-label="Delete post"
+                    title="Delete post"
                   >
-                    {isDeleting ? 'Deleting...' : 'Delete'}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="action-icon">
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
+                    <span>Delete</span>
                   </button>
                 </div>
-              </div>
-            ) : (
-              /* CARD ACTIONS (EDIT / DELETE) */
-              <div className="post-actions">
-                <button
-                  type="button"
-                  className="btn-action-edit"
-                  onClick={handleStartEdit}
-                  title="Edit caption"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  className="btn-action-delete"
-                  onClick={() => setShowDeleteConfirm(true)}
-                  title="Delete post"
-                >
-                  Delete
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </>
         )}
       </div>
-    </div>
+    </article>
   );
 };
 
