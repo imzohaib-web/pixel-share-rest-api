@@ -10,7 +10,7 @@ const Feed = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('http://localhost:3000/api/posts');
+      const response = await fetch('/api/posts');
       
       if (!response.ok) {
         throw new Error('Failed to fetch posts. Make sure backend is running.');
