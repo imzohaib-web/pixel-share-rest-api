@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import PostCard from '../components/PostCard';
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
@@ -30,6 +31,16 @@ const Feed = () => {
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  const handleUpdatePost = (updatedPost) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => (post._id === updatedPost._id ? updatedPost : post))
+    );
+  };
+
+  const handleDeletePost = (postId) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+  };
 
   if (loading) {
     return (
@@ -77,22 +88,12 @@ const Feed = () => {
       ) : (
         <div className="feed-grid">
           {posts.map((post) => (
-            <div className="post-card" key={post._id}>
-              <div className="post-image-container">
-                <img 
-                  src={post.image} 
-                  alt={post.caption || 'Shared post'} 
-                  className="post-image"
-                  loading="lazy"
-                />
-              </div>
-              <div className="post-info">
-                <p className="post-caption">{post.caption || 'No caption'}</p>
-                <div className="post-meta">
-                  <span>Posted recently</span>
-                </div>
-              </div>
-            </div>
+            <PostCard
+              key={post._id}
+              post={post}
+              onUpdatePost={handleUpdatePost}
+              onDeletePost={handleDeletePost}
+            />
           ))}
         </div>
       )}

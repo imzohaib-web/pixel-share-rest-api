@@ -504,3 +504,206 @@ p {
   background: var(--accent);
   color: #fff;
 }
+
+/* Post Card Actions & Edit / Delete Controls */
+.no-caption {
+  color: var(--text);
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border);
+}
+
+.btn-action-edit,
+.btn-action-delete {
+  font-size: 0.825rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.btn-action-edit {
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+}
+
+.btn-action-edit:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.btn-action-delete {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.btn-action-delete:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* Edit Mode Form */
+.post-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.post-edit-textarea {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text-h);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 70px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-edit-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.post-edit-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.char-count {
+  font-size: 0.75rem;
+  color: var(--text);
+}
+
+.char-count.exceeded {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.post-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-card-save,
+.btn-card-cancel,
+.btn-card-delete-confirm {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.btn-card-save {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.btn-card-save:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-card-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-card-cancel {
+  background: var(--code-bg);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-card-cancel:hover:not(:disabled) {
+  background: var(--border);
+  color: var(--text-h);
+}
+
+.btn-card-delete-confirm {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.btn-card-delete-confirm:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+/* Delete Confirmation Box */
+.delete-confirm-box {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.delete-confirm-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Card Badges and Alerts */
+.post-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease;
+}
+
+.post-card-badge.success {
+  background: #10b981;
+}
+
+.post-card-alert {
+  font-size: 0.75rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 0.4rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
